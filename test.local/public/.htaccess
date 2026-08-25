@@ -1,0 +1,53 @@
+### 1. ВКЛЮЧЕНИЕ ДВИЖКА РЕДИРЕКТОВ
+RewriteEngine on
+RewriteBase /
+
+# Удаление WWW (перенаправление на без-www)
+RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+RewriteRule ^(.*)$ http://%1/$1 [R=301,L]
+
+# Удаление завершающего слэша (кроме папок)
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule (.+)/$ /$1 [L,R=301]
+
+# Скрытие расширения .php в URL
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.php -f
+RewriteRule ^(.*)$ $1.php
+
+
+### 2. НАСТРОЙКА КОДИРОВКИ UTF-8
+AddDefaultCharset utf-8
+AddCharset utf-8 *
+<IfModule mod_charset.c>
+    CharsetSourceEnc utf-8
+    CharsetDefault utf-8
+</IfModule>
+
+
+### 3. БЕЗОПАСНОСТЬ (ЗАЩИТА СИСТЕМНЫХ ФАЙЛОВ)
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+Options -Indexes
+
+
+# Скрытие расширения .php в URL (более стабильный вариант)
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}\.php -f
+RewriteRule ^([^/]+)$ $1.php [L]
+
+
+
+### 4. ОПТИМИЗАЦИЯ И КЭШИРОВАНИЕ
+#<IfModule mod_expires.c>
+#    ExpiresActive On
+#    ExpiresByType text/css "access plus 1 week"
+#    ExpiresByType application/javascript "access plus 1 week"
+#    ExpiresByType image/jpeg "access plus 1 month"
+#    ExpiresByType image/png "access plus 1 month"
+#</IfModule>
